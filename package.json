@@ -1,6 +1,6 @@
 {
   "name": "versa-blend",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "Versa Blend is a Node.js package available on the npm registry, designed to simplify the development process for programmers. With Versa Blend, developers gain access to a wide array of tools, functions, and methods, allowing them to streamline their coding efforts and reduce the need for custom logic. This package is particularly useful for those working with Express.js, general JavaScript operations, and XML document manipulations.",
   "main": "index.js",
   "scripts": {
@@ -39,7 +39,10 @@
   },
   "homepage": "https://github.com/piyush2053/all-rounder#readme",
   "dependencies": {
+    "ajv": "^8.12.0",
+    "csvtojson": "^2.0.10",
     "fs": "^0.0.1-security",
+    "json2csv": "^6.0.0-alpha.2",
     "pdf-lib": "^1.17.1",
     "xml2js": "^0.6.2"
   }

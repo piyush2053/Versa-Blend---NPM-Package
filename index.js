@@ -32,7 +32,7 @@ async function excel2pdf(excelFilePath, pdfFilePath) {
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
     const pdfPages = pdfDoc.getPages();
 
-    const pdfPage = pdfPages[0]; // Assuming you want to add content to the first page
+    const pdfPage = pdfPages[0]; 
 
     pdfPage.drawText('Hello, PDF!', {
       x: 50,
@@ -49,11 +49,81 @@ async function excel2pdf(excelFilePath, pdfFilePath) {
 }
 
 
-// Export the functions
+const zlib = require('zlib');
+
+async function compressFile(inputFilePath, compressedFilePath) {
+  try {
+    const inputBuffer = await fs.promises.readFile(inputFilePath);
+    const compressedBuffer = zlib.deflateSync(inputBuffer);
+    await fs.promises.writeFile(compressedFilePath, compressedBuffer);
+  } catch (err) {
+    console.error(err);
+  }
+}
+const Ajv = require('ajv');
+
+function validateJson(jsonObject, jsonSchema) {
+  const ajv = new Ajv();
+  const validate = ajv.compile(jsonSchema);
+  const isValid = validate(jsonObject);
+
+  if (!isValid) {
+    console.error('JSON validation error: ', validate.errors);
+    return false;
+  }
+
+  return true;
+}
+const { PDFDocument, rgb, degrees } = require('pdf-lib');
+const { loadImage } = require('node-canvas');
+
+async function imageToPdf(imageFilePath, pdfFilePath) {
+  try {
+    const image = await loadImage(imageFilePath);
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([image.width, image.height]);
+    page.drawImage(image, {
+      x: 0,
+      y: 0,
+      width: image.width,
+      height: image.height,
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    await fs.promises.writeFile(pdfFilePath, pdfBytes);
+  } catch (err) {
+    console.error(err);
+  }
+}
+const json2csv = require('json2csv').parse;
+
+function jsonToCsv(jsonObject, csvFilePath) {
+  try {
+    const csv = json2csv(jsonObject);
+    fs.writeFileSync(csvFilePath, csv);
+  } catch (err) {
+    console.error(err);
+  }
+}
+const csv = require('csvtojson');
+
+async function csvToJson(csvFilePath) {
+  try {
+    const jsonArray = await csv().fromFile(csvFilePath);
+    return jsonArray;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 module.exports = {
   sum,
   multiply,
   xml2js,
   excel2pdf,
-  // Add more functions here as needed
+  compressFile,
+  validateJson,
+  imageToPdf,
+  jsonToCsv,
+  csvToJson
 };
