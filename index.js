@@ -1,17 +1,12 @@
+require('dotenv').config()
 const xml2js = require('xml2js');
 const { PDFDocument, rgb } = require('pdf-lib');
 const fs = require('fs');
+const OpenAI = require('openai');
+const zlib = require('zlib');
+const { loadImage } = require('canvas');
 
-function sum(a, b) {
-  return a + b;
-}
-
-function multiply(a, b) {
-  return a * b;
-}
-
-
-function xml2js(xmlString) {
+function xml_to_js(xmlString) {
   return new Promise((resolve, reject) => {
     const parser = new xml2js.Parser();
     parser.parseString(xmlString, (err, result) => {
@@ -23,7 +18,6 @@ function xml2js(xmlString) {
     });
   });
 }
-
 
 async function excel2pdf(excelFilePath, pdfFilePath) {
   try {
@@ -49,7 +43,7 @@ async function excel2pdf(excelFilePath, pdfFilePath) {
 }
 
 
-const zlib = require('zlib');
+
 
 async function compressFile(inputFilePath, compressedFilePath) {
   try {
@@ -74,8 +68,7 @@ function validateJson(jsonObject, jsonSchema) {
 
   return true;
 }
-const { PDFDocument, rgb, degrees } = require('pdf-lib');
-const { loadImage } = require('node-canvas');
+
 
 async function imageToPdf(imageFilePath, pdfFilePath) {
   try {
@@ -115,11 +108,44 @@ async function csvToJson(csvFilePath) {
     console.error(err);
   }
 }
+//AI functions
+console.log(process.env.APIKEY)
+const apiKey = process.env.APIKEY
+if (!apiKey) {
+  console.log("------------------------------");
+  process.exit(1); // Exit the application
+}
+
+const openai = new OpenAI({ apiKey: apiKey });
+
+
+async function chatWithGPT(question) {
+  try {
+    const response = await openai.completions.create({
+      engine: 'text-davinci-002',
+      prompt: question,
+      max_tokens: 150,
+    });
+
+    return response.choices[0].text;
+  } catch (error) {
+    console.error('Error communicating with ChatGPT:', error);
+    return 'An error occurred while talking to ChatGPT.';
+  }
+}
+
+const userQuestion = "What is the capital of France?";
+chatWithGPT(userQuestion)
+  .then(response => {
+    console.log('ChatGPT response:', response);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+
 
 module.exports = {
-  sum,
-  multiply,
-  xml2js,
+  xml_to_js,
   excel2pdf,
   compressFile,
   validateJson,
