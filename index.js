@@ -98,6 +98,8 @@ function jsonToCsv(jsonObject, csvFilePath) {
     console.error(err);
   }
 }
+
+
 const csv = require('csvtojson');
 
 async function csvToJson(csvFilePath) {
@@ -108,40 +110,62 @@ async function csvToJson(csvFilePath) {
     console.error(err);
   }
 }
-//AI functions
-console.log(process.env.APIKEY)
-const apiKey = process.env.APIKEY
-if (!apiKey) {
-  console.log("------------------------------");
-  process.exit(1); // Exit the application
-}
 
-const openai = new OpenAI({ apiKey: apiKey });
-
-
-async function chatWithGPT(question) {
+function addToDatabase(newEntry) {
+  const filename = 'database-vesa-blend.json';
   try {
-    const response = await openai.completions.create({
-      engine: 'text-davinci-002',
-      prompt: question,
-      max_tokens: 150,
-    });
+    let data = [];
+    if (fs.existsSync(filename)) {
+      const jsonData = fs.readFileSync(filename, 'utf8');
+      data = JSON.parse(jsonData);
+    }
+    data.push(newEntry);
+    fs.writeFileSync(filename, JSON.stringify(data, null, 2));
 
-    return response.choices[0].text;
-  } catch (error) {
-    console.error('Error communicating with ChatGPT:', error);
-    return 'An error occurred while talking to ChatGPT.';
+    console.log('Entry added to the database.');
+
+  } catch (err) {
+    console.error('Error adding entry to the database: ', err);
   }
 }
 
-const userQuestion = "What is the capital of France?";
-chatWithGPT(userQuestion)
-  .then(response => {
-    console.log('ChatGPT response:', response);
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+
+
+// Function to fetch data from the JSON file based on an identifier
+function fetchDataFromDatabase(identifier) {
+  const filename = 'database-vesa-blend.json';
+
+  try {
+    if (fs.existsSync(filename)) {
+      const jsonData = fs.readFileSync(filename, 'utf8');
+      const data = JSON.parse(jsonData);
+
+      const matchingEntry = data.find(entry => entry.id === identifier);
+
+      if (matchingEntry) {
+        return matchingEntry;
+      } else {
+        console.log('Entry not found for the provided identifier.');
+        return null;
+      }
+    } else {
+      console.log('Database file not found.');
+      return null;
+    }
+
+  } catch (err) {
+    console.error('Error fetching data from the database: ', err);
+    return null;
+  }
+}
+
+//example of fetchDataFromDatabase
+// const fetchedEntry = fetchDataFromDatabase(identifierToFetch);
+
+// if (fetchedEntry) {
+//   console.log('Fetched entry:', fetchedEntry);
+// }
+
 
 
 module.exports = {
@@ -151,5 +175,7 @@ module.exports = {
   validateJson,
   imageToPdf,
   jsonToCsv,
-  csvToJson
+  csvToJson,
+  addToDatabase,
+  fetchDataFromDatabase
 };
