@@ -23,6 +23,42 @@ npm install --save-dev versa-blend  # or using yarn: yarn add versa-blend -D
 
 # How to Use
 
+`Add to Free Database (OBJECT BASED)`
+
+This function provides a user-friendly and cost-effective solution for storing and retrieving data objects in a JSON file, making it an excellent choice for beginners working on various projects.
+
+### Usage
+
+```javascript
+const object_user = {
+  id_unique :"898",
+  name : "John Doe",
+  email : "john@doe.com" ,
+  phone : "999999999"
+}
+addToDatabase(object_user)
+
+//Thats it your data is stored
+```
+
+`Fetch from same Database (OBJECT BASED)`
+
+```javascript
+const id_unique = 898
+const my_data = fetchDataFromDatabase(id_unique)
+console.log(my_data)
+
+//Output - {
+  // id_unique :"898",
+  // name : "John Doe",
+  // email : "john@doe.com" ,
+  // phone : "999999999"
+}
+
+//Thats it your data is stored
+```
+
+
 `xmlString`
 
 This function parses an XML string and returns a Promise that resolves to the parsed JavaScript object.
